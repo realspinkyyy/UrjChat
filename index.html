@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .chat-container {
+      width: 400px;
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .header {
+      text-align: center;
+      font-size: 1.5em;
+      margin-bottom: 20px;
+    }
+    .chat-box {
+      max-height: 300px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+      background-color: #fafafa;
+    }
+    .message {
+      display: flex;
+      margin-bottom: 10px;
+    }
+    .message .name {
+      font-weight: bold;
+      margin-right: 5px;
+    }
+    .message .phone {
+      color: #777;
+    }
+    .message .text {
+      margin-left: 10px;
+      background-color: #f1f1f1;
+      padding: 8px;
+      border-radius: 5px;
+      max-width: 75%;
+    }
+    .input-box {
+      display: flex;
+      gap: 10px;
+    }
+    .input-box input {
+      width: 70%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      font-size: 1em;
+    }
+    .input-box button {
+      width: 25%;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .input-box button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div class="header">Chat with People</div>
+    <div id="chatBox" class="chat-box"></div>
+    <div class="input-box">
+      <input id="messageInput" type="text" placeholder="Type a message..." />
+      <button id="sendMessageBtn">Send</button>
+    </div>
+  </div>
+
+  <script>
+    // Simulate a chat database (replace with actual database connection)
+    const messages = [
+      { name: "John", phone: "0712345678", text: "Hello, how are you?" },
+      { name: "Alice", phone: "0712345679", text: "I'm good, thanks!" },
+    ];
+
+    // Display messages from the database
+    function displayMessages() {
+      const chatBox = document.getElementById("chatBox");
+      chatBox.innerHTML = ''; // Clear existing messages
+      messages.forEach((msg) => {
+        const messageElement = document.createElement("div");
+        messageElement.classList.add("message");
+        messageElement.innerHTML = `
+          <div>
+            <span class="name">${msg.name}</span>
+            <span class="phone">${msg.phone}</span>
+            <div class="text">${msg.text}</div>
+          </div>
+        `;
+        chatBox.appendChild(messageElement);
+      });
+    }
+
+    // Send a new message
+    document.getElementById("sendMessageBtn").addEventListener("click", () => {
+      const messageInput = document.getElementById("messageInput");
+      const messageText = messageInput.value.trim();
+      if (messageText) {
+        const newMessage = {
+          name: "You", // Replace with the user's name from the registration
+          phone: "07111111111", // Replace with user's phone number
+          text: messageText,
+        };
+
+        // Push to the "database" (messages array)
+        messages.push(newMessage);
+
+        // Optionally send it to a real backend to store it (use AJAX/fetch)
+        // Example (uncomment and use for real API):
+        /*
+        fetch('YOUR_BACKEND_API_URL', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newMessage),
+        });
+        */
+
+        // Display the new message
+        displayMessages();
+
+        // Clear the input field
+        messageInput.value = '';
+      }
+    });
+
+    // Initialize chat
+    displayMessages();
+  </script>
+</body>
+</html>
