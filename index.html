@@ -4,27 +4,35 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat App</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-analytics.js"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f7f7f7;
+      background-color: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       margin: 0;
+      flex-direction: column;
+      text-align: center;
     }
     .chat-container {
       width: 400px;
-      background-color: white;
+      background-color: #fff;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      display: none;
     }
     .header {
-      text-align: center;
-      font-size: 1.5em;
+      font-size: 1.8em;
       margin-bottom: 20px;
+      color: red;
     }
     .chat-box {
       max-height: 300px;
@@ -32,7 +40,7 @@
       margin-bottom: 20px;
       border: 1px solid #ddd;
       padding: 10px;
-      border-radius: 5px;
+      border-radius: 10px;
       background-color: #fafafa;
     }
     .message {
@@ -42,6 +50,7 @@
     .message .name {
       font-weight: bold;
       margin-right: 5px;
+      color: red;
     }
     .message .phone {
       color: #777;
@@ -60,27 +69,57 @@
     .input-box input {
       width: 70%;
       padding: 10px;
-      border-radius: 5px;
+      border-radius: 10px;
       border: 1px solid #ddd;
       font-size: 1em;
     }
     .input-box button {
       width: 25%;
       padding: 10px;
-      border-radius: 5px;
+      border-radius: 10px;
       border: none;
-      background-color: #4CAF50;
+      background-color: red;
       color: white;
       font-size: 1em;
       cursor: pointer;
     }
     .input-box button:hover {
-      background-color: #45a049;
+      background-color: #cc0000;
+    }
+    .input-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .input-form input {
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 1em;
+    }
+    .input-form button {
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      background-color: red;
+      color: white;
+      font-size: 1em;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="chat-container">
+
+  <!-- User Registration Form -->
+  <div id="userForm" class="input-form">
+    <h2>Welcome to Chat App</h2>
+    <input id="userName" type="text" placeholder="Enter your name" required />
+    <input id="userPhone" type="text" placeholder="Enter your phone number" required />
+    <button onclick="saveUserData()">Start Chatting</button>
+  </div>
+
+  <!-- Chat Container -->
+  <div id="chatContainer" class="chat-container">
     <div class="header">Chat with People</div>
     <div id="chatBox" class="chat-box"></div>
     <div class="input-box">
@@ -89,20 +128,69 @@
     </div>
   </div>
 
+  <!-- Firebase SDK Setup -->
   <script>
-    // Simulate a chat database (replace with actual database connection)
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyDWDk_p33Y_jgPNJPHoJApEmo0W7Q9BhxA",
+      authDomain: "spinktweet.firebaseapp.com",
+      projectId: "spinktweet",
+      storageBucket: "spinktweet.firebasestorage.app",
+      messagingSenderId: "848866063079",
+      appId: "1:848866063079:web:be2efce9b4c5ecc3956842",
+      measurementId: "G-81YMX6VBK4"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const analytics = firebase.getAnalytics(app);
+
+    // Check if user is already registered (saved in localStorage)
+    if (localStorage.getItem('userName') && localStorage.getItem('userPhone')) {
+      showChat();
+    } else {
+      showUserForm();
+    }
+
+    // Show the user form to input name and phone number
+    function showUserForm() {
+      document.getElementById('userForm').style.display = 'flex';
+      document.getElementById('chatContainer').style.display = 'none';
+    }
+
+    // Show the chat container
+    function showChat() {
+      document.getElementById('userForm').style.display = 'none';
+      document.getElementById('chatContainer').style.display = 'block';
+      displayMessages();
+    }
+
+    // Save user name and phone number in localStorage
+    function saveUserData() {
+      const name = document.getElementById('userName').value.trim();
+      const phone = document.getElementById('userPhone').value.trim();
+      if (name && phone) {
+        localStorage.setItem('userName', name);
+        localStorage.setItem('userPhone', phone);
+        showChat();
+      } else {
+        alert('Please fill out both fields.');
+      }
+    }
+
+    // Simulate a chat database (replace with actual database calls)
     const messages = [
       { name: "John", phone: "0712345678", text: "Hello, how are you?" },
-      { name: "Alice", phone: "0712345679", text: "I'm good, thanks!" },
+      { name: "Alice", phone: "0712345679", text: "I'm good, thanks!" }
     ];
 
-    // Display messages from the database
+    // Display messages
     function displayMessages() {
-      const chatBox = document.getElementById("chatBox");
-      chatBox.innerHTML = ''; // Clear existing messages
+      const chatBox = document.getElementById('chatBox');
+      chatBox.innerHTML = ''; // Clear previous messages
       messages.forEach((msg) => {
-        const messageElement = document.createElement("div");
-        messageElement.classList.add("message");
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message');
         messageElement.innerHTML = `
           <div>
             <span class="name">${msg.name}</span>
@@ -115,28 +203,18 @@
     }
 
     // Send a new message
-    document.getElementById("sendMessageBtn").addEventListener("click", () => {
-      const messageInput = document.getElementById("messageInput");
+    document.getElementById('sendMessageBtn').addEventListener('click', () => {
+      const messageInput = document.getElementById('messageInput');
       const messageText = messageInput.value.trim();
       if (messageText) {
         const newMessage = {
-          name: "You", // Replace with the user's name from the registration
-          phone: "07111111111", // Replace with user's phone number
-          text: messageText,
+          name: localStorage.getItem('userName'),
+          phone: localStorage.getItem('userPhone'),
+          text: messageText
         };
 
-        // Push to the "database" (messages array)
+        // Push new message (in a real-world scenario, send to the server here)
         messages.push(newMessage);
-
-        // Optionally send it to a real backend to store it (use AJAX/fetch)
-        // Example (uncomment and use for real API):
-        /*
-        fetch('YOUR_BACKEND_API_URL', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newMessage),
-        });
-        */
 
         // Display the new message
         displayMessages();
@@ -145,9 +223,6 @@
         messageInput.value = '';
       }
     });
-
-    // Initialize chat
-    displayMessages();
   </script>
 </body>
 </html>
