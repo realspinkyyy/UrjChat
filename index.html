@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chat App</title>
-  
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-analytics.js"></script>
@@ -178,14 +178,20 @@
       }
     }
 
-    // Simulate a chat database (replace with actual database calls)
-    const messages = [
-      { name: "John", phone: "0712345678", text: "Hello, how are you?" },
-      { name: "Alice", phone: "0712345679", text: "I'm good, thanks!" }
-    ];
+    // Retrieve existing messages from localStorage
+    function getMessages() {
+      const storedMessages = localStorage.getItem('messages');
+      return storedMessages ? JSON.parse(storedMessages) : [];
+    }
+
+    // Save messages to localStorage
+    function saveMessages(messages) {
+      localStorage.setItem('messages', JSON.stringify(messages));
+    }
 
     // Display messages
     function displayMessages() {
+      const messages = getMessages();
       const chatBox = document.getElementById('chatBox');
       chatBox.innerHTML = ''; // Clear previous messages
       messages.forEach((msg) => {
@@ -213,8 +219,12 @@
           text: messageText
         };
 
-        // Push new message (in a real-world scenario, send to the server here)
+        // Get existing messages and add the new message
+        const messages = getMessages();
         messages.push(newMessage);
+
+        // Save the updated messages
+        saveMessages(messages);
 
         // Display the new message
         displayMessages();
